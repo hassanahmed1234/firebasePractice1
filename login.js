@@ -1,13 +1,20 @@
-import {login } from "./firebase.js";
+import { login, addUserDetails, getuserdetails,alluserdetail,getCurrentUser } from "./firebase.js";
 
 let button = document.querySelector('button')
-button.addEventListener('click',()=>{
+
+button.addEventListener('click', () => {
     console.log('lalala');
+
+
+    let email = document.querySelector('#email')
+    let password = document.querySelector('#password')
+    login(email.value, password.value)
+
     
-    
-let email = document.querySelector('#email')
-let password = document.querySelector('#password')
-login(email.value,password.value)
+
 
 })
- 
+   getCurrentUser()
+
+
+// getalldata.addEventListener('click', () => alluserdetail())

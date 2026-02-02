@@ -1,8 +1,8 @@
 // Import the functions you need from the SDKs you need
 import { initializeApp } from "https://www.gstatic.com/firebasejs/12.8.0/firebase-app.js";
 import { getAnalytics } from "https://www.gstatic.com/firebasejs/12.8.0/firebase-analytics.js";
-import { getAuth, createUserWithEmailAndPassword, signInWithEmailAndPassword } from "https://www.gstatic.com/firebasejs/12.8.0/firebase-auth.js";
-import { getFirestore,doc, setDoc } from "https://www.gstatic.com/firebasejs/12.8.0/firebase-firestore.js";
+import { getAuth, onAuthStateChanged, createUserWithEmailAndPassword, signInWithEmailAndPassword, signOut } from "https://www.gstatic.com/firebasejs/12.8.0/firebase-auth.js";
+import { getFirestore, doc, setDoc, getDoc, collection, query, where, getDocs } from "https://www.gstatic.com/firebasejs/12.8.0/firebase-firestore.js";
 
 // TODO: Add SDKs for Firebase products that you want to use
 // https://firebase.google.com/docs/web/setup#available-libraries
@@ -22,49 +22,51 @@ const firebaseConfig = {
 // Initialize Firebase
 const app = initializeApp(firebaseConfig);
 const analytics = getAnalytics(app);
-
-
 const auth = getAuth(app);
 
 //signup  ===>>>>>>>>>
 
-function signup(email, password) {
-  createUserWithEmailAndPassword(auth, email, password)
-    .then((userCredential) => {
+async function signup(email, password) {
+  try {
+    const userCredential = await createUserWithEmailAndPassword(auth, email, password);
+    const user = userCredential.user;
 
-      console.log('successfully');
-      console.log(userCredential);
+    await addUserDetails(user.uid, {
+      email: email,
+      created: new Date()
+    });
+    await signOut(auth);
 
+    window.location = './login.html';
 
-      const user = userCredential.user;
-
-    })
-    .catch((error) => {
-
-      console.log('phaataaaa');
+  } catch (error) {
+      console.log('code phaataaaa');
       const errorCode = error.code;
       const errorMessage = error.message;
       console.log(errorCode);
       console.log(errorMessage);
-
-    });
+  }
 }
 // login   ===>>>>>>>>>
 
-function login(email, password) {
+ function login(email, password) {
 
   signInWithEmailAndPassword(auth, email, password)
-    .then((userCredential) => {
+    .then(async(userCredential) => {
       // Signed in 
       const user = userCredential.user;
-        console.log('successfully');
+      console.log(user);
+      
+      // await getuserdetails(user.uid)
+   console.log('firestore me saved');
       // ...
+      window.location = './home.html'
     })
     .catch((error) => {
       const errorCode = error.code;
       const errorMessage = error.message;
 
-         console.log(errorCode);
+      console.log(errorCode);
 
       console.log(errorMessage);
     });
@@ -77,17 +79,98 @@ const db = getFirestore(app);
 
 //add user details  ===>>>>>>>>>
 
-async function addUserDetails (userdetails){
-console.log('hiiiii');
+async function addUserDetails(uid, userdetails) {
 
-try{
-  await setDoc(doc(db, "user", "123"), userdetails);
-console.log('hogaya');
-}catch(err){
-  console.log(err);
+  console.log(userdetails);
+
+  try {
+    await setDoc(doc(db, "users", uid), userdetails);
+    console.log('hogaya ');
+
+    window.location = './login.html'
+  } catch (error) {
+    console.error('Firestore error ', error.message);
+  }
+
+
+}
+
+async function getuserdetails(uid) {
+  console.log('chalaa'+ uid);
+  
+
+  const docRef = await doc(db, "users", uid);
+  const docSnap = await getDoc(docRef);
+
+  console.log(docRef);
+  console.log(docSnap);
+  
+
+  if (docSnap.exists()) {
+    console.log("Document data:", docSnap.data());
+  } else {
+    // docSnap.data() will be undefined in this case
+    console.log("No such document!");
+  }
+
+}
+
+async function alluserdetail() {
+
+  const q = query(collection(db, "users"));
+  let userArr = []
+  const querySnapshot = await getDocs(q);
+  querySnapshot.forEach((doc) => {
+    userArr.push( doc.data())
+    console.log(doc.id, " => ", doc.data());
+  });
+ return userArr
   
 }
 
+
+
+function getCurrentUser() {
+
+  onAuthStateChanged(auth, (user) => {
+    if (user) {
+      const uid = user.uid;
+      
+      // console.log(user);
+      // console.log(window.location);
+      // getuserdetails(uid)
+
+      // if (window.location.pathname !== '/home.html') {
+      //   window.location = './home.html'
+
+      // }
+
+    }else{
+
+      //login nhi hai
+
+      if (window.location.pathname == '/index.html' || window.location.pathname == '/login.html') {
+       
+      } else{
+         window.location = './login.html'
+      }
+    }
+  });
+}
+function logOutUser() {
+  
+  signOut(auth).then(() => {
+    window.location = './login.html'
+    
+ 
+  }).catch((error) => {
+   console.log(error);
+   
+  });
+
 }
 
-export { signup, login,addUserDetails }
+
+export { signup, login, addUserDetails, getuserdetails, alluserdetail, getCurrentUser,logOutUser }
+
+
