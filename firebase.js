@@ -33,6 +33,7 @@ async function signup(email, password) {
 
     await addUserDetails(user.uid, {
       email: email,
+      uid : user.uid,
       created: new Date()
     });
     signOut(auth)
