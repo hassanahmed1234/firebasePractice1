@@ -1,5 +1,4 @@
 import { signup,addUserDetails,getCurrentUser} from "./firebase.js";
-getCurrentUser()
 
 let button = document.querySelector('button')
 button.addEventListener('click',()=>{

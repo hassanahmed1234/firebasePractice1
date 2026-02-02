@@ -35,9 +35,7 @@ async function signup(email, password) {
       email: email,
       created: new Date()
     });
-    await signOut(auth);
-
-    window.location = './login.html';
+    signOut(auth)
 
   } catch (error) {
       console.log('code phaataaaa');
@@ -52,12 +50,12 @@ async function signup(email, password) {
  function login(email, password) {
 
   signInWithEmailAndPassword(auth, email, password)
-    .then(async(userCredential) => {
+    .then((userCredential) => {
       // Signed in 
       const user = userCredential.user;
       console.log(user);
       
-      // await getuserdetails(user.uid)
+     getuserdetails(user.uid)
    console.log('firestore me saved');
       // ...
       window.location = './home.html'
@@ -108,6 +106,7 @@ async function getuserdetails(uid) {
 
   if (docSnap.exists()) {
     console.log("Document data:", docSnap.data());
+    return  docSnap.data()
   } else {
     // docSnap.data() will be undefined in this case
     console.log("No such document!");
@@ -140,10 +139,10 @@ function getCurrentUser() {
       // console.log(window.location);
       // getuserdetails(uid)
 
-      // if (window.location.pathname !== '/home.html') {
-      //   window.location = './home.html'
+      if (window.location.pathname !== '/home.html') {
+        window.location = './home.html'
 
-      // }
+      }
 
     }else{
 
