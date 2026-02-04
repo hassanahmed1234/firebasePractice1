@@ -10,4 +10,3 @@ signup(email.value,password.value)
 
 })
  
-  

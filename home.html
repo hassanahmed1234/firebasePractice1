@@ -44,19 +44,30 @@
             <input type="text" id="lastname" placeholder="lastname" aria-label="Recipient’s username"
               aria-describedby="basic-addon2">
           </div>
+          <div class="input-group mb-3">
+            <input type="file" id="profilepic">
+          </div>
           <hr>
           <textarea name="" placeholder="description" id="description"></textarea>
          
-
+       
 
         </div>
         <div class="modal-footer">
           <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
-          <button type="button" class="btn btn-primary">Save changes</button>
+          <button id="savebtn" type="button" class="btn btn-primary">Save changes</button>
         </div>
       </div>
     </div>
   </div>
+
+  <!-- LOADER -->
+
+<div id="loader" class="loader-overlay d-none">
+  <div class="spinner-border text-primary" role="status">
+    <span class="visually-hidden">Loading...</span>
+  </div>
+</div>
 
 
   <script type="module" src="home.js"></script>
